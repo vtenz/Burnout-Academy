@@ -1,0 +1,6 @@
+{
+  "name": "نسخه‌خوان پلاس | سامانه هوشمند آمادگی آزمون عملی تکنسین داروخانه",
+  "description": "سامانه جامع یادگیری فشرده، تشخیص دست‌خط پزشک، مرور هوشمند (Active Recall) و شبیه‌ساز امتحان عملی ۳ نسخه‌ای تکنسین داروخانه",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
