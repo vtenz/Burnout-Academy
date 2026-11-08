@@ -12,6 +12,7 @@ import {
   ChevronDown,
   ChevronUp,
   RotateCcw,
+  ExternalLink,
 } from 'lucide-react';
 import { ClinicalCategory, PrescriptionCard } from '../types/prescription';
 import { CLINICAL_CATEGORIES } from '../data/prescriptionsData';
@@ -427,11 +428,20 @@ export const DrugsCatalogView: React.FC<DrugsCatalogViewProps> = ({
                                 className="w-16 h-16 object-cover rounded-lg border border-slate-800 shrink-0"
                                 loading="lazy"
                               />
-                              <div className="min-w-0 flex-1 space-y-1">
+                              <div className="min-w-0 flex-1 space-y-1.5">
                                 <div className="flex items-center justify-between gap-1">
-                                  <span className="px-2 py-0.5 rounded bg-teal-950 text-teal-300 text-[11px] font-extrabold">
+                                  <a
+                                    href={`?rx=${encodeURIComponent(occ.rxId)}`}
+                                    onClick={(e) => {
+                                      if (!e.ctrlKey && !e.metaKey && e.button === 0) {
+                                        e.preventDefault();
+                                        onSelectPrescription(occ.rxId);
+                                      }
+                                    }}
+                                    className="px-2 py-0.5 rounded bg-teal-950 hover:bg-teal-900 text-teal-300 text-[11px] font-extrabold transition"
+                                  >
                                     نسخه #{occ.rxNumber} ({occ.sessionTitle})
-                                  </span>
+                                  </a>
                                 </div>
                                 <div className="text-xs font-bold text-white truncate">
                                   {occ.doctorOrTitle}
@@ -442,14 +452,27 @@ export const DrugsCatalogView: React.FC<DrugsCatalogViewProps> = ({
                                 >
                                   {occ.item.englishCue}
                                 </div>
-                                <button
-                                  type="button"
-                                  onClick={() => onSelectPrescription(occ.rxId)}
-                                  className="inline-flex items-center gap-1 text-[11px] font-extrabold text-teal-400 hover:text-teal-300"
-                                >
-                                  <span>باز کردن این نسخه در میز کار</span>
-                                  <ArrowUpLeft className="w-3 h-3" />
-                                </button>
+                                <div className="flex flex-wrap items-center gap-2 pt-0.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => onSelectPrescription(occ.rxId)}
+                                    className="inline-flex items-center gap-1 text-[11px] font-extrabold text-teal-400 hover:text-teal-300"
+                                  >
+                                    <span>باز کردن در میز کار</span>
+                                    <ArrowUpLeft className="w-3 h-3" />
+                                  </button>
+                                  <span className="text-slate-700">|</span>
+                                  <a
+                                    href={`?rx=${encodeURIComponent(occ.rxId)}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-950/80 hover:bg-indigo-900 text-indigo-300 border border-indigo-700/60 text-[11px] font-extrabold transition"
+                                    title="باز کردن این نسخه در تب جدید روی میز کار نسخه‌خوانی"
+                                  >
+                                    <span>تب جدید</span>
+                                    <ExternalLink className="w-3 h-3" />
+                                  </a>
+                                </div>
                               </div>
                             </div>
                           ))}

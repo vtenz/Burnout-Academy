@@ -61,8 +61,25 @@ type ActiveMode =
   | 'blitz'
   | 'archive';
 
+function getInitialRxFromUrl(): string | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const rxParam = params.get('rx')?.trim();
+    if (!rxParam) return null;
+    const found = ALL_PRESCRIPTIONS.find(
+      (c) => c.id === rxParam || String(c.rxNumber) === rxParam
+    );
+    return found ? found.id : null;
+  } catch {
+    return null;
+  }
+}
+
 export default function App() {
-  const [activeMode, setActiveMode] = useState<ActiveMode>('workbench');
+  const [activeMode, setActiveMode] = useState<ActiveMode>(() =>
+    getInitialRxFromUrl() ? 'workbench' : 'workbench'
+  );
   const [mobileFiltersOpen, setMobileFiltersOpen] = useState(false);
 
   // Persistent Mastery Map
@@ -105,7 +122,9 @@ export default function App() {
     sortByPriority: false,
   });
 
-  const [selectedRxId, setSelectedRxId] = useState<string>(ALL_PRESCRIPTIONS[0].id);
+  const [selectedRxId, setSelectedRxId] = useState<string>(
+    () => getInitialRxFromUrl() ?? ALL_PRESCRIPTIONS[0].id
+  );
 
   useEffect(() => {
     try {
