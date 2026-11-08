@@ -18,6 +18,7 @@ import {
   SlidersHorizontal,
   ChevronDown,
   ChevronUp,
+  Target,
 } from 'lucide-react';
 import {
   ALL_PRESCRIPTIONS,
@@ -45,6 +46,7 @@ import { ArchiveAndShelfView } from './components/ArchiveAndShelfView';
 import { DrugsCatalogView } from './components/DrugsCatalogView';
 import { DoctorsDirectoryView } from './components/DoctorsDirectoryView';
 import { PharmacyShelvesSimulator } from './components/PharmacyShelvesSimulator';
+import { RealExamShelvesView } from './components/RealExamShelvesView';
 
 const STORAGE_KEYS = {
   MASTERY: 'rx_exam_mastery_v1',
@@ -54,6 +56,7 @@ const STORAGE_KEYS = {
 
 type ActiveMode =
   | 'workbench'
+  | 'real-shelves'
   | 'shelves'
   | 'drugs'
   | 'doctors'
@@ -377,7 +380,7 @@ export default function App() {
             </div>
           </div>
 
-          {/* 7 Mode Switcher Tabs: Single-line horizontal scroll on mobile, wrapped bar on desktop */}
+          {/* Mode Switcher Tabs: Single-line horizontal scroll on mobile, wrapped bar on desktop */}
           <nav
             aria-label="حالت‌های یادگیری و آزمون"
             className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800 overflow-x-auto no-scrollbar"
@@ -397,6 +400,19 @@ export default function App() {
 
             <button
               type="button"
+              onClick={() => setActiveMode('real-shelves')}
+              className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold transition ${
+                activeMode === 'real-shelves'
+                  ? 'bg-rose-500 text-white shadow'
+                  : 'text-rose-300 bg-rose-950/40 border border-rose-800/60 hover:bg-rose-900/50'
+              }`}
+            >
+              <Target className="w-3.5 h-3.5" />
+              <span>🎯 عکس قفسه‌های آزمون (خط‌کشی نسخه‌ها)</span>
+            </button>
+
+            <button
+              type="button"
               onClick={() => setActiveMode('shelves')}
               className={`shrink-0 inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-lg text-xs font-extrabold transition ${
                 activeMode === 'shelves'
@@ -405,7 +421,7 @@ export default function App() {
               }`}
             >
               <ShoppingBasket className="w-3.5 h-3.5" />
-              <span>قفسه‌های داروخانه</span>
+              <span>بازی قفسه‌چینی</span>
             </button>
 
             <button
@@ -803,6 +819,13 @@ export default function App() {
           </>
         )}
 
+        {activeMode === 'real-shelves' && (
+          <RealExamShelvesView
+            allPrescriptions={ALL_PRESCRIPTIONS}
+            onSelectPrescription={handleJumpToStudyCard}
+          />
+        )}
+
         {activeMode === 'shelves' && (
           <PharmacyShelvesSimulator
             allPrescriptions={ALL_PRESCRIPTIONS}
@@ -859,7 +882,7 @@ export default function App() {
       {/* Mobile-Only Bottom Quick Navigation Bar (Thumb-friendly, slim 56px height) */}
       <nav
         aria-label="نوار پیمایش سریع موبایل"
-        className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-2 py-1.5 grid grid-cols-5 gap-1"
+        className="fixed bottom-0 inset-x-0 z-40 lg:hidden bg-slate-950/95 backdrop-blur-md border-t border-slate-800 px-1.5 py-1.5 grid grid-cols-6 gap-1"
       >
         <button
           type="button"
@@ -880,6 +903,22 @@ export default function App() {
         <button
           type="button"
           onClick={() => {
+            setActiveMode('real-shelves');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }}
+          className={`flex flex-col items-center justify-center py-1 rounded-lg text-[10px] font-extrabold transition ${
+            activeMode === 'real-shelves'
+              ? 'text-rose-400 bg-rose-950/60'
+              : 'text-rose-300 hover:text-rose-200'
+          }`}
+        >
+          <Target className="w-4 h-4 mb-0.5" />
+          <span>قفسه آزمون</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
             setActiveMode('shelves');
             window.scrollTo({ top: 0, behavior: 'smooth' });
           }}
@@ -890,7 +929,7 @@ export default function App() {
           }`}
         >
           <ShoppingBasket className="w-4 h-4 mb-0.5" />
-          <span>قفسه دارو</span>
+          <span>سبد دارو</span>
         </button>
 
         <button
@@ -938,7 +977,7 @@ export default function App() {
           }`}
         >
           <Award className="w-4 h-4 mb-0.5" />
-          <span>آزمون عملی</span>
+          <span>آزمون</span>
         </button>
       </nav>
     </div>

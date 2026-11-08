@@ -199,3 +199,34 @@ test('catalogAggregator: evaluateShelfBasket grades picked shelf items and detec
   assert.equal(mistakeResult.crossedOutMistakes.length, 1);
 });
 
+import {
+  REAL_EXAM_SHELVES,
+  rankPrescriptionsByShelfProbability,
+} from './realShelfAnnotator';
+
+test('realShelfAnnotator: ranks all 129 prescriptions by probability and maps every drug item to a bounding box on the 17 real shelf photos', () => {
+  assert.equal(REAL_EXAM_SHELVES.length, 17);
+
+  const ranked = rankPrescriptionsByShelfProbability(ALL_PRESCRIPTIONS);
+  assert.equal(ranked.length, 129);
+  assert.equal(ranked[0].rank, 1);
+  assert.equal(ranked[128].rank, 129);
+
+  // Ranked in descending order of coverage/probability
+  assert.ok(ranked[0].exactCoveragePercent >= ranked[ranked.length - 1].exactCoveragePercent);
+  assert.equal(ranked[0].exactCoveragePercent, 100);
+
+  // Every single item in every prescription has a valid shelfPhotoId (1..17) and bounding box
+  for (const entry of ranked) {
+    assert.equal(entry.annotations.length, entry.prescription.items.length);
+    for (const ann of entry.annotations) {
+      assert.ok(ann.shelfPhotoId >= 1 && ann.shelfPhotoId <= 17);
+      assert.ok(ann.rect.x >= 0 && ann.rect.x <= 100);
+      assert.ok(ann.rect.y >= 0 && ann.rect.y <= 100);
+      assert.ok(ann.rect.w > 0 && ann.rect.w <= 100);
+      assert.ok(ann.rect.h > 0 && ann.rect.h <= 100);
+    }
+  }
+});
+
+
